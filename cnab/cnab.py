@@ -12,6 +12,7 @@ from cnab.enums import (
     EGuaranteeType,
     ETransaction,
 )
+from cnab.helpers import make_spaces
 from cnab.interfaces import ICnabLine, ICnabName
 from cnab.types import CnabDate, CnabDateTime, Document, Guid, Money
 
@@ -85,28 +86,24 @@ class CnabHeader(ICnabLine):
     customer_document: Document
     unique_id: int
 
-    def _generate_blank_spaces(self) -> str:
-        return " " * 354
-
     def _generate_unique_id(self) -> str:
         return f'{self.unique_id:07d}'
 
     def make_line(self):
-        return f'02RETORNO{self._generate_unique_id()}1CONTRATO{self.customer_document}{self._generate_blank_spaces()}'
+        content = f'02RETORNO{self._generate_unique_id()}1CONTRATO{self.customer_document}'
+        return f"{content}{make_spaces(400 - len(content))}"
 
 
 @dataclass
 class CnabTrail(ICnabLine):
     contract_amount: int
 
-    def _generate_blank_spaces(self) -> str:
-        return " " * 392
-
     def _generate_contract_qt(self):
         return f"{self.contract_amount:07d}"
 
     def make_line(self):
-        return f'9{self._generate_contract_qt()}{self._generate_blank_spaces()}'
+        content = f'9{self._generate_contract_qt()}'
+        return f"{content}{make_spaces(400 - len(content))}"
 
 
 @dataclass
@@ -128,11 +125,9 @@ class CnabContractData(ICnabLine):
     qt_receivable_units: int
     unique_id: ETransaction = ETransaction.CONTRACT_DATA
 
-    def _generate_blank_spaces(self) -> str:
-        return " " * 378
-
     def make_line(self):
-        return f"{self.unique_id}{self.key}{self.holder_document}{self.creation_timestamp}{self.due_date}{self.sign_date}{self.effect}{self.division_method}{self.guarantee_type}{self.value}{self.guarantee_value}{self.percentual_ur}{self.status}{self.qt_receivable_units}{self._generate_blank_spaces()}"  # noqa: E501
+        content = f"{self.unique_id}{self.key}{self.holder_document}{self.creation_timestamp}{self.due_date}{self.sign_date}{self.effect}{self.division_method}{self.guarantee_type}{self.value}{self.guarantee_value}{self.percentual_ur}{self.status}{self.qt_receivable_units}"  # noqa: E501
+        return f"{content}{make_spaces(400 - len(content))}"
 
 
 @dataclass
@@ -167,11 +162,9 @@ class CnabBankingDataForLiquidation(ICnabLine):
 
         return f"{f_bank}"
 
-    def _generate_blank_spaces(self) -> str:
-        return " " * 325
-
     def make_line(self):
-        return f"{self.unique_id}{self.key}{self._generate_bank_code()}{self.account_agency}{self.account_number}{self.account_digit}{self.account_type}{self.document_type}{self.document}{self._generate_blank_spaces()}"  # noqa: E501
+        content = f"{self.unique_id}{self.key}{self._generate_bank_code()}{self.account_agency}{self.account_number}{self.account_digit}{self.account_type}{self.document_type}{self.document}"  # noqa: E501
+        return f"{content}{make_spaces(400 - len(content))}"
 
 
 @dataclass
@@ -191,8 +184,6 @@ class CnabReceivableUnitData(ICnabLine):
     contract_priority: int
     unique_id: ETransaction = ETransaction.RECEIVABLES_UNIT_DATA
 
-    def _generate_blank_spaces(self) -> str:
-        return " " * 233
-
     def make_line(self):
-        return f"{self.unique_id}{self.contract_key}{self.transferror_document_type}{self.transferror_document}{self.accreditor_document}{self.holder_document}{self.arrengement_code}{self.date_liquidation}{self.receivable_unit_value}{self.commited_contract_value}{self.contract_priority}{self._generate_blank_spaces()}"  # noqa: E501
+        content = f"{self.unique_id}{self.contract_key}{self.transferror_document_type}{self.transferror_document}{self.accreditor_document}{self.holder_document}{self.arrengement_code}{self.date_liquidation}{self.receivable_unit_value}{self.commited_contract_value}{self.contract_priority}"  # noqa: E501
+        return f"{content}{make_spaces(400 - len(content))}"

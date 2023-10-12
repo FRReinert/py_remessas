@@ -6,6 +6,7 @@ from cnab.enums import (
     ETransaction,
 )
 from cnab.cnab import CnabBankingDataForLiquidation
+from cnab.helpers import make_spaces
 
 
 @pytest.mark.parametrize(
@@ -22,7 +23,7 @@ from cnab.cnab import CnabBankingDataForLiquidation
             "12345678901",
             ETransaction.BANK_LIQUIDATION_DATA,
             "212345678-1234-5678-1234-567812345678063123456789CC cpf12345678901"
-            + " " * 325,
+            + make_spaces(400 - 66),
         ),
         (
             "00000000-0000-0000-0000-000000000000",
@@ -35,7 +36,7 @@ from cnab.cnab import CnabBankingDataForLiquidation
             "00000000000000",
             ETransaction.BANK_LIQUIDATION_DATA,
             "200000000-0000-0000-0000-000000000000479000000000PPcnpj00000000000000"
-            + " " * 325,
+            + make_spaces(400 - 69),
         ),
         (
             "00000000-0000-0000-0000-000000000000",
@@ -48,7 +49,7 @@ from cnab.cnab import CnabBankingDataForLiquidation
             "00000000000000",
             ETransaction.BANK_LIQUIDATION_DATA,
             "200000000-0000-0000-0000-000000000000479000000000PPcnpj00000000000000"
-            + " " * 325,
+            + make_spaces(400 - 69),
         ),
     ],
     ids=[

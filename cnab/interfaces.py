@@ -5,7 +5,7 @@ class ICnabLine(ABC):
     """Cnab Line generator Interface"""
 
     @abstractmethod
-    def make_line() -> str:
+    def make_line() -> str:  # pragma: no cover
         pass
 
 
@@ -13,7 +13,7 @@ class ICnabName(ABC):
     """Cnab Name provider Interface"""
 
     @abstractmethod
-    def make_name(self):
+    def make_name(self) -> str:  # pragma: no cover
         pass
 
 
@@ -24,5 +24,5 @@ class ICnabFactory(ABC):
         header_factory: ICnabLine,
         trail_factory: ICnabLine,
         contracts: list[ICnabLine],
-    ):
+    ):  # pragma: no cover
         pass

@@ -2,6 +2,7 @@ from unittest import TestCase
 from cnab.cnab import CnabContractData
 
 from cnab.enums import EContractEffect, EContractStatus, EDivisionMethod, EGuaranteeType
+from cnab.helpers import make_spaces
 from cnab.types import CnabDate, CnabDateTime, Document, Guid, Money
 
 
@@ -21,7 +22,7 @@ mock_contract = {
     "qt_receivable_units": 5,
 }
 
-expected_line = f"112345678-abcd-1234-efgh-9876543210ab000012345678902020-10-28 13:52:232020-10-280202-10-292110000000000010000000000000005001025{' ' * 378}"  # noqa: E501
+expected_line = f"112345678-abcd-1234-efgh-9876543210ab000012345678902020-10-28 13:52:232020-10-280202-10-292110000000000010000000000000005001025{make_spaces(400 - 127)}"  # noqa: E501
 
 
 class TestContractData(TestCase):

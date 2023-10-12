@@ -1,0 +1,4 @@
+[run]
+omit =
+    */tests/*
+    make_file_example.py

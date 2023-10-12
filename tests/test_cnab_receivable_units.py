@@ -4,6 +4,7 @@ from cnab.enums import (
     EDocumentType,
     ETransaction,
 )
+from cnab.helpers import make_spaces
 from cnab.types import CnabDate, Document, Guid, Money
 from cnab.cnab import CnabReceivableUnitData
 
@@ -25,7 +26,7 @@ from cnab.cnab import CnabReceivableUnitData
             1,
             ETransaction.RECEIVABLES_UNIT_DATA,
             "312345678-1234-1234-1234-123456789abc cpf000333333333330001111111111000055555555555ACC2000-01-010000000000004000000000000004001"
-            + " " * 233,  # noqa: E501
+            + make_spaces(400 - 127)
         )
     ],
     ids=["test happy path"],
