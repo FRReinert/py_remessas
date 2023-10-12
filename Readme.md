@@ -31,7 +31,7 @@ https://wspf.banco.bradesco/wsValidadorUniversal/validadorgeral
 ```python
 from io import SringIO
 
-from cnab.cnab import CnabHeader, CnabReceivableUnitData, CnabTrail
+from cnab.cnab import CnabHeader, CnabReceivableUnitData, CnabTrail, CnabName
 from cnab.enums import EArrangement
 from cnab.exporters import FileExporter
 from cnab.types import CnabDate, Document, Guid, Money
@@ -50,13 +50,20 @@ receivable_unit_value = Money(1000)  # R$ 10,00
 commited_contract_value = Money(1000)  # R$ 10,00
 contract_priority = 1
 
-# Instantiate Header factory
+# instance of name factory
+# used mostly for file exporter
+last_used_file = "CC121000.RET"
+service_prefix = "TRT"
+extension = "RET"
+name = CnabName(last_used_file, service_prefix, extension)
+
+# instance of Header factory
 header = CnabHeader(customer_document, unique_id)
 
-# Instantiate Trail Factory
+# instance of Trail Factory
 trail = CnabTrail(1)
 
-# Instantiate Record Factory with properties
+# instance of Record Factory with properties
 contract_one = CnabReceivableUnitData(
     contract_key=contract_key,
     receivable_unit_key=receivable_unit_key,
@@ -74,7 +81,7 @@ contract_one = CnabReceivableUnitData(
 # provided by the library or create your own
 
 # Export to file
-FileExporter.export(header, trail, [contract_one], "./")
+FileExporter.export(name, header, trail, [contract_one], "./")
 
 # Return a Generator for further usage
 GeneratorExporter.export(header, trail, [contract_one])
