@@ -24,9 +24,11 @@ from cnab.cnab import CnabReceivableUnitData
             Money(400),
             1,
             ETransaction.RECEIVABLES_UNIT_DATA,
-            "312345678-1234-1234-1234-123456789abc cpf000333333333330001111111111000055555555555ACC2000-01-010000000000004000000000000004001" + " " * 233,  # noqa: E501
+            "312345678-1234-1234-1234-123456789abc cpf000333333333330001111111111000055555555555ACC2000-01-010000000000004000000000000004001"
+            + " " * 233,  # noqa: E501
         )
     ],
+    ids=["test happy path"],
 )
 def test_make_line(
     contract_key,
