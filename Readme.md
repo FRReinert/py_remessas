@@ -20,9 +20,11 @@ make test
 ```
 
 ## Validation
-You can use the following link to test files:
+You can use the following links to test files:
 
 https://wspf.bradesco.com.br/wsValidadorTeleBanco/ValidadorRemessa.aspx
+
+https://wspf.banco.bradesco/wsValidadorUniversal/validadorgeral
 
 ## Basic usage
 
