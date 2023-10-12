@@ -39,9 +39,10 @@ class FileExporter(ICnabFactory):
         header_factory: ICnabLine,
         trail_factory: ICnabLine,
         contracts: list[ICnabLine],
-        file_path: str,
+        directory_path: str,
     ) -> None:
-        with open(file_path, "w") as fopen:
+        file_name = "0001.cnab"  # review rule for name
+        with open(f"{directory_path}/{file_name}", "w") as fopen:
             fopen.write(header_factory.make_line() + '\n')
             for contract in contracts:
                 fopen.write(contract.make_line() + '\n')

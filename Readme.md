@@ -1,3 +1,8 @@
+# Cnab 400 Contracts
+
+## Usage
+
+```py
 from cnab.cnab import CnabHeader, CnabReceivableUnitData, CnabTrail
 from cnab.enums import EArrangement
 from cnab.exporters import FileExporter
@@ -31,4 +36,7 @@ contract_one = CnabReceivableUnitData(
     contract_priority=contract_priority,
 )
 
-FileExporter.export(header, trail, [contract_one], f"./{unique_id}.cnab")
+FileExporter.export(header, trail, [contract_one], "./")
+GeneratorExporter.export(header, trail, [contract_one])
+StreamSyncExporter.export(header, trail, [contract_one])
+```
