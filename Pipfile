@@ -4,11 +4,11 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-pytest = "*"
-pytest-cov = "*"
 
 [dev-packages]
 faker = "*"
+pytest = "*"
+pytest-cov = "*"
 coverage = "*"
 
 [requires]
