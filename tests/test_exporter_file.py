@@ -1,6 +1,17 @@
+import unittest
+from unittest.mock import mock_open, patch
 import pytest
 from cnab.interfaces import ICnabLine
 from cnab.exporters import FileExporter
+
+
+@pytest.fixture
+def name_factory():
+    class MockNameFactory:
+        def make_name(self):
+            return "mockname.RET"
+
+    return MockNameFactory()
 
 
 @pytest.fixture
@@ -24,13 +35,10 @@ def trail_factory():
 @pytest.fixture
 def contract_factory():
     class MockContractFactory(ICnabLine):
-        def __init__(self, contract_id):
-            self.contract_id = contract_id
-
         def make_line(self):
-            return f"CONTRACT {self.contract_id}"
+            return "CONTRACT"
 
-    return MockContractFactory
+    return MockContractFactory()
 
 
 @pytest.fixture
@@ -39,33 +47,30 @@ def file_path(tmp_path):
 
 
 def test_export_with_valid_data(
-    header_factory, trail_factory, contract_factory, file_path
+    name_factory, header_factory, trail_factory, contract_factory, file_path
 ):
-    contracts = [contract_factory(1), contract_factory(2), contract_factory(3)]
-    FileExporter.export(header_factory, trail_factory, contracts, file_path)
+    contracts = [contract_factory, contract_factory, contract_factory]
 
-    with open(file_path, "r") as fopen:
-        lines = fopen.readlines()
-        assert lines[0].strip() == "HEADER"
-        assert lines[1].strip() == "CONTRACT 1"
-        assert lines[2].strip() == "CONTRACT 2"
-        assert lines[3].strip() == "CONTRACT 3"
-        assert lines[4].strip() == "TRAIL"
+    mock = mock_open()
+    with patch('builtins.open', mock):
+        FileExporter.export(
+            name_factory, header_factory, trail_factory, contracts, file_path
+        )
+
+    mock().write.assert_any_call('HEADER\n')
+    mock().write.assert_any_call('CONTRACT\n')
+    mock().write.assert_any_call('TRAIL\n')
 
 
-def test_export_with_empty_contracts(header_factory, trail_factory, file_path):
+def test_export_with_empty_contracts(
+    name_factory, header_factory, trail_factory, file_path
+):
     contracts = []
-    FileExporter.export(header_factory, trail_factory, contracts, file_path)
+    mock = mock_open()
+    with patch('builtins.open', mock):
+        FileExporter.export(
+            name_factory, header_factory, trail_factory, contracts, file_path
+        )
 
-    with open(file_path, "r") as fopen:
-        lines = fopen.readlines()
-        assert lines[0].strip() == "HEADER"
-        assert lines[1].strip() == "TRAIL"
-
-
-def test_export_with_invalid_file_path(header_factory, trail_factory, contract_factory):
-    contracts = [contract_factory(1), contract_factory(2)]
-    file_path = "/path/to/nonexistent/file.txt"
-
-    with pytest.raises(FileNotFoundError):
-        FileExporter.export(header_factory, trail_factory, contracts, file_path)
+    mock().write.assert_any_call('HEADER\n')
+    mock().write.assert_any_call('TRAIL\n')

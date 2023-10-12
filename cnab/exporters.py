@@ -1,6 +1,7 @@
 from io import StringIO
+from pathlib import Path
 from typing import Generator
-from cnab.interfaces import ICnabFactory, ICnabLine
+from cnab.interfaces import ICnabFactory, ICnabLine, ICnabName
 
 
 class StreamSyncExporter(ICnabFactory):
@@ -36,13 +37,14 @@ class GeneratorExporter(ICnabFactory):
 class FileExporter(ICnabFactory):
     @staticmethod
     def export(
+        name_factory: ICnabName,
         header_factory: ICnabLine,
         trail_factory: ICnabLine,
         contracts: list[ICnabLine],
         directory_path: str,
     ) -> None:
-        file_name = "0001.cnab"  # review rule for name
-        with open(f"{directory_path}/{file_name}", "w") as fopen:
+        file_path = Path(directory_path).joinpath(name_factory.make_name())
+        with open(file_path, "w") as fopen:
             fopen.write(header_factory.make_line() + '\n')
             for contract in contracts:
                 fopen.write(contract.make_line() + '\n')

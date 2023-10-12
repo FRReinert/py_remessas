@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from datetime import datetime
 
 from cnab.enums import (
     EAccountType,
@@ -11,8 +12,72 @@ from cnab.enums import (
     EGuaranteeType,
     ETransaction,
 )
-from cnab.interfaces import ICnabLine
+from cnab.interfaces import ICnabLine, ICnabName
 from cnab.types import CnabDate, CnabDateTime, Document, Guid, Money
+
+
+@dataclass
+class CnabName(ICnabName):
+    last_used_filename: str
+    service_prefix: str
+    extension: str
+    first_file: bool = False
+
+    def _get_last_used_filename(self):
+        data = self.last_used_filename.split('.')[0]
+        if len(data) != 8:
+            raise ValueError('Invalid cnab filename')
+        return data
+
+    def _format_service_prefix(self) -> str:
+        if len(self.service_prefix) != 2:
+            raise ValueError("service prefix should contain 2 characters")
+
+        if ord(self.service_prefix[0]) > 90 or ord(self.service_prefix[0]) < 65:
+            raise ValueError("only characters are allowed in service prefix")
+
+        if ord(self.service_prefix[1]) > 90 or ord(self.service_prefix[1]) < 65:
+            raise ValueError("only characters are allowed in service prefix")
+
+        return self.service_prefix.upper()
+
+    def _get_last_code_from_filename(self):
+        return self._get_last_used_filename()[6:8]
+
+    def _is_last_file_from_other_day(self):
+        now = datetime.now()
+        day = str(now.day).zfill(2)
+        month = str(now.month).zfill(2)
+        return f"{day}{month}" != self._get_last_used_filename()[2:6]
+
+    def _format_code(self):
+        """
+        HEX system will give us 256 files per day per customer
+        hopefully this is enough
+        """
+
+        if self._is_last_file_from_other_day():
+            return '00'
+
+        last_code = self._get_last_code_from_filename()
+        new_number = int(last_code, 16) + 0x1
+        return hex(new_number).split('0x')[1].upper()
+
+    def _format_extension(self):
+        if len(self.extension) != 3:
+            raise ValueError("extension should have 3 characters")
+        return self.extension.upper()
+
+    def _format_date(self):
+        now = datetime.now()
+        day = str(now.day).zfill(2)
+        month = str(now.month).zfill(2)
+        return f"{day}{month}"
+
+    def make_name(self):
+        if self.first_file:
+            return f"{self._format_service_prefix()}{self._format_date()}00.{self._format_extension()}"
+        return f"{self._format_service_prefix()}{self._format_date()}{self._format_code()}.{self._format_extension()}"
 
 
 @dataclass

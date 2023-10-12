@@ -6,7 +6,15 @@ class ICnabLine(ABC):
 
     @abstractmethod
     def make_line() -> str:
-        raise NotImplementedError()
+        pass
+
+
+class ICnabName(ABC):
+    """Cnab Name provider Interface"""
+
+    @abstractmethod
+    def make_name(self):
+        pass
 
 
 class ICnabFactory(ABC):
@@ -17,4 +25,4 @@ class ICnabFactory(ABC):
         trail_factory: ICnabLine,
         contracts: list[ICnabLine],
     ):
-        raise NotImplementedError()
+        pass
