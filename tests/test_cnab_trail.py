@@ -2,7 +2,7 @@ from unittest import TestCase
 
 from faker import Faker
 
-from cnab.cnab import CnabTrail
+from cnab.regress import CnabReturnTrail
 
 
 class TestCnabTrail(TestCase):
@@ -10,5 +10,5 @@ class TestCnabTrail(TestCase):
         self.faker = Faker(locale='pt_BR')
 
     def test_cnab_trail_with_valid_data(self):
-        trail = CnabTrail(20)
+        trail = CnabReturnTrail(20)
         self.assertEqual(trail.make_line()[:8], '90000020')

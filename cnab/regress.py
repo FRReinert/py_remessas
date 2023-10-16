@@ -12,8 +12,8 @@ from cnab.enums import (
     EGuaranteeType,
     ETransaction,
 )
-from cnab.helpers import make_spaces
-from cnab.interfaces import ICnabLine, ICnabName
+from cnab.helpers import left_justify, make_spaces
+from cnab.interfaces import ICnabLine, ICnabName, ICnabTrail
 from cnab.types import CnabDate, CnabDateTime, Document, Guid, Money
 
 
@@ -82,108 +82,110 @@ class CnabName(ICnabName):
 
 
 @dataclass
-class CnabHeader(ICnabLine):
-    customer_document: Document
-    unique_id: int
+class CnabReturnHeader(ICnabLine):
+    num_sequencial: int  # 6
+    documento_cliente: Document
 
-    def _generate_unique_id(self) -> str:
-        return f'{self.unique_id:07d}'
+    def _make_date(self) -> str:
+        now = datetime.now()
+        return f"{now.day.zfill(2)}{now.month.zfill(2)}{now.year[2:]}"
 
     def make_line(self):
-        content = f'02RETORNO{self._generate_unique_id()}1CONTRATO{self.customer_document}'
+        content = f'02RETORNO{self.num_sequencial:07d}1{left_justify("CONTRATO",15)}{self.documento_cliente}'  # noqa: E501
         return f"{content}{make_spaces(400 - len(content))}"
 
 
 @dataclass
-class CnabTrail(ICnabLine):
-    contract_amount: int
+class CnabReturnTrail(ICnabTrail):
+    """
+    Cnab Trail Implementation
+    """
 
-    def _generate_contract_qt(self):
-        return f"{self.contract_amount:07d}"
+    qt_contratos: int = 0  # 7
 
     def make_line(self):
-        content = f'9{self._generate_contract_qt()}'
+        content = f'9{self.contract_amount:07d}'
         return f"{content}{make_spaces(400 - len(content))}"
 
 
 @dataclass
-class CnabContractData(ICnabLine):
+class CnabReturnTypeOne(ICnabLine):
     """Cnab regress contract data"""
 
-    key: Guid
-    holder_document: Document
-    creation_timestamp: CnabDateTime
-    due_date: CnabDate
-    sign_date: CnabDate
-    effect: EContractEffect
-    division_method: EDivisionMethod
-    guarantee_type: EGuaranteeType
-    value: Money
-    guarantee_value: Money
-    percentual_ur: int
-    status: EContractStatus
-    qt_receivable_units: int
-    unique_id: ETransaction = ETransaction.CONTRACT_DATA
+    chave_contrato: Guid
+    documento_titular: Document
+    data_hora_criacao_contrato: CnabDateTime
+    data_hora_vencimento_contrato: CnabDate
+    data_assinatura_contrato: CnabDate
+    efeito_contrato: EContractEffect
+    metodo_divisao: EDivisionMethod
+    tipo_garantia: EGuaranteeType
+    valor_contrato: Money
+    valor_garantia: Money
+    percentual_valor_ur: int
+    status_contrato: EContractStatus
+    qt_unidade_recebivel: int
+    identificacao_registro: ETransaction = ETransaction.CONTRACT_DATA
 
     def make_line(self):
-        content = f"{self.unique_id}{self.key}{self.holder_document}{self.creation_timestamp}{self.due_date}{self.sign_date}{self.effect}{self.division_method}{self.guarantee_type}{self.value}{self.guarantee_value}{self.percentual_ur}{self.status}{self.qt_receivable_units}"  # noqa: E501
+        content = f"{self.identificacao_registro}{self.chave_contrato}{self.documento_titular}{self.data_hora_criacao_contrato}{self.data_hora_vencimento_contrato}{self.data_assinatura_contrato}{self.efeito_contrato}{self.metodo_divisao}{self.tipo_garantia}{self.valor_contrato}{self.valor_garantia}{self.percentual_valor_ur:03d}{self.status_contrato}{self.qt_unidade_recebivel:07d}"  # noqa: E501
         return f"{content}{make_spaces(400 - len(content))}"
 
 
 @dataclass
-class CnabBankingDataForLiquidation(ICnabLine):
+class CnabReturnTypeTwo(ICnabLine):
     """Cnab regress data for liquidation"""
 
-    key: Guid
-    bank_code: EBank | int | str
-    account_agency: str
-    account_number: str
-    account_digit: str
-    account_type: EAccountType
-    document_type: EDocumentType
-    document: Document
-    unique_id: ETransaction = ETransaction.BANK_LIQUIDATION_DATA
+    chave_contrato: Guid
+    banco: EBank | int | str
+    agencia_conta: str
+    numero_conta: str
+    digito_conta: str
+    tipo_conta: EAccountType
+    tipo_documento_titular_conta: EDocumentType
+    documento_titular_conta: Document
+    identificacao_registro: ETransaction = ETransaction.BANK_LIQUIDATION_DATA
 
     def _generate_bank_code(self) -> str:
-        if isinstance(self.bank_code, EBank):
-            f_bank = str(self.bank_code)
+        if isinstance(self.banco, EBank):
+            f_bank = str(self.banco)
 
-        elif isinstance(self.bank_code, str):
-            if len(self.bank_code) > 3:
+        elif isinstance(self.banco, str):
+            if len(self.banco) > 3:
                 raise ValueError("Bank code should not be biger then 3 digits")
 
-            f_bank = self.bank_code.zfill(3)
+            f_bank = self.banco.zfill(3)
 
-        elif isinstance(self.bank_code, int):
-            if self.bank_code > 999:
+        elif isinstance(self.banco, int):
+            if self.banco > 999:
                 raise ValueError("Bank code should not be bigger then 999")
 
-            f_bank = str(self.bank_code).zfill(3)
+            f_bank = str(self.banco).zfill(3)
 
         return f"{f_bank}"
 
     def make_line(self):
-        content = f"{self.unique_id}{self.key}{self._generate_bank_code()}{self.account_agency}{self.account_number}{self.account_digit}{self.account_type}{self.document_type}{self.document}"  # noqa: E501
+        content = f"{self.identificacao_registro}{self.chave_contrato}{self._generate_bank_code()}{self.agencia_conta}{self.numero_conta}{self.digito_conta}{self.tipo_conta}{self.tipo_documento_titular_conta}{self.documento_titular_conta}"  # noqa: E501
         return f"{content}{make_spaces(400 - len(content))}"
 
 
 @dataclass
-class CnabReceivableUnitData(ICnabLine):
+class CnabReturnTypeThree(ICnabLine):
     """Cnab regress receivable unit data"""
 
-    contract_key: Guid
-    receivable_unit_key: Guid
-    transferror_document_type: EDocumentType
-    transferror_document: Document
-    accreditor_document: Document
-    holder_document: Document
-    arrengement_code: EArrangement
-    date_liquidation: CnabDate
-    receivable_unit_value: Money
-    commited_contract_value: Money
-    contract_priority: int
-    unique_id: ETransaction = ETransaction.RECEIVABLES_UNIT_DATA
+    chave_contrato: Guid
+    chave_unidade_recebivel: Guid
+    tipo_documento_cedente: EDocumentType
+    documento_cedente: Document
+    documento_credenciadora: Document
+    documento_titular: Document
+    arranjo_pagamento: EArrangement
+    data_liquidacao: CnabDate
+    valor_unidade_recebivel: Money
+    valor_comprometido_no_contrato: Money
+    prioridade_contrato: int
+    identificacao_registro: ETransaction = ETransaction.RECEIVABLES_UNIT_DATA
 
     def make_line(self):
-        content = f"{self.unique_id}{self.contract_key}{self.transferror_document_type}{self.transferror_document}{self.accreditor_document}{self.holder_document}{self.arrengement_code}{self.date_liquidation}{self.receivable_unit_value}{self.commited_contract_value}{self.contract_priority}"  # noqa: E501
+        content = f"{self.identificacao_registro}{self.chave_contrato}{self.chave_unidade_recebivel}{self.tipo_documento_cedente}{self.documento_cedente}{self.documento_credenciadora}{self.documento_titular}{self.arranjo_pagamento}{self.data_liquidacao}{self.valor_unidade_recebivel}{self.valor_comprometido_no_contrato}{self.prioridade_contrato:03d}"  # noqa: E501
         return f"{content}{make_spaces(400 - len(content))}"

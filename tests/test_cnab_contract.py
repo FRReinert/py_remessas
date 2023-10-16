@@ -1,5 +1,5 @@
 from unittest import TestCase
-from cnab.cnab import CnabContractData
+from cnab.regress import CnabReturnTypeOne
 
 from cnab.enums import EContractEffect, EContractStatus, EDivisionMethod, EGuaranteeType
 from cnab.helpers import make_spaces
@@ -27,5 +27,5 @@ expected_line = f"112345678-abcd-1234-efgh-9876543210ab000012345678902020-10-28 
 
 class TestContractData(TestCase):
     def test_cnab_contract_with_valid_data(self):
-        contract = CnabContractData(**mock_contract)
+        contract = CnabReturnTypeOne(**mock_contract)
         self.assertEqual(contract.make_line(), expected_line)

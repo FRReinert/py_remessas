@@ -6,7 +6,7 @@ from cnab.enums import (
 )
 from cnab.helpers import make_spaces
 from cnab.types import CnabDate, Document, Guid, Money
-from cnab.cnab import CnabReceivableUnitData
+from cnab.regress import CnabReturnTypeThree
 
 
 @pytest.mark.parametrize(
@@ -46,7 +46,7 @@ def test_make_line(
     unique_id,
     expected_line,
 ):
-    cnab_instance = CnabReceivableUnitData(
+    cnab_instance = CnabReturnTypeThree(
         contract_key,
         receivable_unit_key,
         transferror_document_type,

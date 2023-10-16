@@ -1,6 +1,6 @@
 import pytest
 from datetime import datetime
-from cnab.cnab import CnabName
+from cnab.regress import CnabName
 
 CURRENT_DATE = datetime.now()
 CURRENT_DAY = str(CURRENT_DATE.day).zfill(2)

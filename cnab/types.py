@@ -17,8 +17,11 @@ class CnabDate:
     day: int
     month: int
     year: int
+    ddmmaa: bool = False
 
     def __str__(self):
+        if self.ddmmaa:
+            return f"{self.day}{self.month}{str(self.year)[2:]}"
         return f"{self.year:04d}-{self.month:02d}-{self.day:02d}"
 
 
@@ -47,7 +50,7 @@ class Guid:
             return False
 
     def __str__(self):
-        return self.guid
+        return self.guid[:36]
 
 
 @dataclass

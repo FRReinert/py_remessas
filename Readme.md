@@ -24,14 +24,12 @@ You can use the following links to test files:
 
 https://wspf.bradesco.com.br/wsValidadorTeleBanco/ValidadorRemessa.aspx
 
-https://wspf.banco.bradesco/wsValidadorUniversal/validadorgeral
-
 ## Basic usage
 
 ```python
 from io import SringIO
 
-from cnab.cnab import CnabHeader, CnabReceivableUnitData, CnabTrail, CnabName
+from cnab.cnab import CnabReturnHeader, CnabReturnTypeThree, CnabReturnTrail, CnabName
 from cnab.enums import EArrangement
 from cnab.exporters import FileExporter
 from cnab.types import CnabDate, Document, Guid, Money
@@ -58,13 +56,13 @@ extension = "RET"
 name = CnabName(last_used_file, service_prefix, extension)
 
 # instance of Header factory
-header = CnabHeader(customer_document, unique_id)
+header = CnabReturnHeader(customer_document, unique_id)
 
 # instance of Trail Factory
-trail = CnabTrail(1)
+trail = CnabReturnTrail(1)
 
 # instance of Record Factory with properties
-contract_one = CnabReceivableUnitData(
+contract_one = CnabReturnTypeThree(
     contract_key=contract_key,
     receivable_unit_key=receivable_unit_key,
     transferror_document=transferror_document,
@@ -99,7 +97,7 @@ StreamSyncExporter.export(header, trail, [contract_one])
 ```python
 from socket import socket, AF_INET, SOCK_STREAM
 
-from cnab.cnab import CnabHeader, CnabReceivableUnitData, CnabTrail
+from cnab.cnab import CnabReturnHeader, CnabReturnTypeThree, CnabReturnTrail
 from cnab.interfaces import ICnabFactory
 
 # Create your own exporter by using the ICnabFactory interface
@@ -127,8 +125,8 @@ class SocketExporter(ICnabFactory):
 
 
 # Example of exporter usage
-header = CnabHeader(...)
-trail = CnabTrail(...)
-contract_one = CnabReceivableUnitData(...)
+header = CnabReturnHeader(...)
+trail = CnabReturnTrail(...)
+contract_one = CnabReturnTypeThree(...)
 SocketExporter.export(header, trail, [contract_one], "127.0.0.1", 8080)
 ```

@@ -5,7 +5,7 @@ from cnab.enums import (
     EDocumentType,
     ETransaction,
 )
-from cnab.cnab import CnabBankingDataForLiquidation
+from cnab.regress import CnabReturnTypeTwo
 from cnab.helpers import make_spaces
 
 
@@ -70,7 +70,7 @@ def test_make_line(
     unique_id,
     expected_line,
 ):
-    cnab_data = CnabBankingDataForLiquidation(
+    cnab_data = CnabReturnTypeTwo(
         key=key,
         bank_code=bank_code,
         account_agency=account_agency,
@@ -98,7 +98,7 @@ def test_make_line_with_large_bank_code_str_should_raise_valuerror():
         "unique_id": ETransaction.BANK_LIQUIDATION_DATA,
     }
     with pytest.raises(ValueError):
-        CnabBankingDataForLiquidation(**data).make_line()
+        CnabReturnTypeTwo(**data).make_line()
 
 
 def test_make_line_with_large_bank_code_int_should_raise_valuerror():
@@ -114,4 +114,4 @@ def test_make_line_with_large_bank_code_int_should_raise_valuerror():
         "unique_id": ETransaction.BANK_LIQUIDATION_DATA,
     }
     with pytest.raises(ValueError):
-        CnabBankingDataForLiquidation(**data).make_line()
+        CnabReturnTypeTwo(**data).make_line()

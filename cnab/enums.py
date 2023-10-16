@@ -1,6 +1,39 @@
 from enum import Enum
 
 
+class EFineType(str, Enum):
+    WITH_FINE = "2"
+    WITHOUT_FINE = "0"
+
+    def __str__(self):
+        return self.value
+
+
+class EReceivableType(str, Enum):
+    DUPLICATE = "01"
+    PROMISSORY_NOTE = "02"
+    INSURANCE_NOTE = "03"
+    RECEIPT = "05"
+    BILLS_OF_EXCHANGE = "10"
+    DEBIT_NOTE = "11"
+    SERVICE_DUPLICATE = "12"
+    CREDIT_CARD = "31"
+    PROPOSAL_SLIP = "32"
+    DEPOSIT_AND_CONTRIBUTION = "33"
+    OTHERS = "99"
+
+    def __str__(self):
+        return self.value
+
+
+class EConditionForSlipEmission(str, Enum):
+    BANK_ISSUE_AND_PROCESS = 1
+    CUSTOMER_ISSUE_AND_BANK_PROCESS = 2
+
+    def __str__(self):
+        return self.value
+
+
 class EAccountType(str, Enum):
     CHECKING_ACCOUNT = 'CC'
     DEPOSIT_ACCOUNT = 'CD'
@@ -14,11 +47,11 @@ class EAccountType(str, Enum):
 
 
 class EDocumentType(str, Enum):
-    CPF = 'cpf'
-    CNPJ = 'cnpj'
+    CPF = ' CPF'
+    CNPJ = 'CNPJ'
 
     def __str__(self):
-        return ' cpf' if self == EDocumentType.CPF else 'cnpj'
+        return self.value
 
 
 class EContractEffect(int, Enum):
@@ -114,39 +147,25 @@ class EArrangement(str, Enum):
 
 
 class EBank(int, Enum):
-    STONE_PAGAMENTOS = 197
-    BANCO_COOPERATIVO_SICREDI_SA = 748
     ADVANCED_CC_LTDA = 117
-    BANCO_INTER = 77
-    NEON_PAGAMENTOS = 735
-    SUPERDIGITAL = 340
-    PAGBANK = 290
-    BANCO_AGIBANK_SA = 121
-    NEXT = 237
-    BANCO_ORIGINAL = 212
-    NUBANK = 260
-    BANCO_WILLBANK = 280
     ALBATROSS_CCV_SA = 172
-    MERCADO_PAGO = 323
     ATIVA_INVESTIMENTOS_SA = 188
-    PICPAY = 380
     AVISTA_SA_CRÉDITO_FINANCIAMENTO_E_INVESTIMENTO = 280
     B_T_CC_LTDA = 80
-    BANCO_AJR_ENNER_SA = 654
     BANCO_ABC_BRASIL_SA = 246
     BANCO_ABN_AMRO_SA = 75
     BANCO_AGIBANK_BRASIL_SA = 121
+    BANCO_AGIBANK_SA = 121
+    BANCO_AJR_ENNER_SA = 654
     BANCO_ALFA_SA = 25
     BANCO_ALVORADA_SA = 641
     BANCO_ANDBANK_BRASIL_SA = 65
     BANCO_ARBI_SA = 213
     BANCO_B3_SA = 96
-    BANCO_SANTANDER = 33
     BANCO_BMG_SA = 318
     BANCO_BNP_PARIBAS_BRASIL_SA = 752
     BANCO_BOCOM_BBM_SA = 107
     BANCO_BRADESCARD_SA = 63
-    CÓDIGO_BANCO_BEG_SA = 31
     BANCO_BRADESCO_BERJ_SA = 122
     BANCO_BRADESCO_CARTÕES_SA = 204
     BANCO_BRADESCO_FINANCIAMENTOS_SA = 394
@@ -154,8 +173,8 @@ class EBank(int, Enum):
     BANCO_BS2_SA = 218
     BANCO_BTG_PACTUAL_SA = 208
     BANCO_C6_SA_C6_BANK = 336
-    BANCO_CAIXA_GERAL_BRASIL_SA = 473
     BANCO_CAIXA_ECONÔMICA_FEDERAL = 104
+    BANCO_CAIXA_GERAL_BRASIL_SA = 473
     BANCO_CAPITAL_SA = 412
     BANCO_CARGILL_SA = 40
     BANCO_CARREFOUR = 368
@@ -165,6 +184,7 @@ class EBank(int, Enum):
     BANCO_CITIBANK_SA = 745
     BANCO_CLÁSSICO_SA = 241
     BANCO_COOPERATIVO_DO_BRASIL_SA_BANCOOB = 756
+    BANCO_COOPERATIVO_SICREDI_SA = 748
     BANCO_CREDIT_AGRICOLE_BRASIL_SA = 222
     BANCO_CREDIT_SUISSE_BRASIL_SA = 505
     BANCO_CREFISA_SA = 69
@@ -190,15 +210,15 @@ class EBank(int, Enum):
     BANCO_INBURSA_SA = 12
     BANCO_INDUSTRIAL_DO_BRASIL_SA = 604
     BANCO_INDUSVAL_SA = 653
+    BANCO_INTER = 77
     BANCO_INTER_SA = 77
     BANCO_INVESTCRED_UNIBANCO_SA = 249
+    BANCO_ITAÚ = 341
     BANCO_ITAÚ_BBA_SA = 184
     BANCO_ITAÚ_CONSIGNADO_SA = 29
     BANCO_ITAUBANK_SA = 479
-    BANCO_ITAÚ = 341
-    BANCO_JP_MORGAN_SA = 376
-    BANCO_SAFRA = 422
     BANCO_JOHN_DEERE_SA = 217
+    BANCO_JP_MORGAN_SA = 376
     BANCO_KDB_SA = 76
     BANCO_KEB_HANA_DO_BRASIL_SA = 757
     BANCO_LUSO_BRASILEIRO_SA = 600
@@ -210,6 +230,215 @@ class EBank(int, Enum):
     BANCO_MORGAN_STANLEY_SA = 66
     BANCO_MUFG_BRASIL_SA = 456
     BANCO_NACIONAL_DE_DESENVOLVIMENTO_ECONÔMICO_E_SOCIAL_BNDES = 7
+    BANCO_ORIGINAL = 212
+    BANCO_SAFRA = 422
+    BANCO_SANTANDER = 33
+    BANCO_WILLBANK = 280
+    CÓDIGO_BANCO_BEG_SA = 31
+    MERCADO_PAGO = 323
+    NEON_PAGAMENTOS = 735
+    NUBANK = 260
+    PAGBANK = 290
+    PICPAY = 380
+    STONE_PAGAMENTOS = 197
+    SUPERDIGITAL = 340
 
     def __str__(self):
         return f"{self.value:03d}"
+
+    def bank_name(self, length: int) -> str:
+        content: str
+        match self.value:
+            case 197:
+                content = "STONE"
+            case 748:
+                content = "SICREDI"
+            case 117:
+                content = "ADVANCED"
+            case 77:
+                content = "INTER"
+            case 735:
+                content = "NU PAGAMENTOS"
+            case 340:
+                content = "SUPERDIGITAL"
+            case 290:
+                content = "PAGBANK"
+            case 121:
+                content = "AGIBANKE"
+            case 212:
+                content = "ORIGINAL"
+            case 260:
+                content = "NUBANK"
+            case 280:
+                content = "WILLBANK"
+            case 172:
+                content = "ALBATROSS"
+            case 323:
+                content = "MERCADO PAGO"
+            case 188:
+                content = "ATIVA"
+            case 380:
+                content = "PICPAY"
+            case 280:
+                content = "ANVISTA"
+            case 80:
+                content = "BET"
+            case 654:
+                content = "AJR ENNER"
+            case 246:
+                content = "ABC BRASIL"
+            case 75:
+                content = "ABN AMRO"
+            case 121:
+                content = "AGIBANK"
+            case 25:
+                content = "ALFA"
+            case 641:
+                content = "ALVORADA"
+            case 65:
+                content = "ANDBANK"
+            case 213:
+                content = "ARBI"
+            case 96:
+                content = "B3"
+            case 33:
+                content = "SANTANDER"
+            case 318:
+                content = "BMG"
+            case 752:
+                content = "BNP PARIBAS"
+            case 107:
+                content = "BOCOM BBM"
+            case 63:
+                content = "BRADESCARD"
+            case 31:
+                content = "CÓDIGO BEG"
+            case 122:
+                content = "BRADESCO BERJ"
+            case 204:
+                content = "BRADESCO CART"
+            case 394:
+                content = "BRADESCO FIN"
+            case 237:
+                content = "BRADESCO"
+            case 218:
+                content = "BS2"
+            case 208:
+                content = "BTG PACTUAL"
+            case 336:
+                content = "C6 BANK"
+            case 473:
+                content = "CAIXA GERAL"
+            case 104:
+                content = "CAIXA"
+            case 412:
+                content = "CAPITAL"
+            case 40:
+                content = "CARGILL"
+            case 368:
+                content = "CARREFOUR"
+            case 266:
+                content = "CÉDULA"
+            case 739:
+                content = "CETELEM"
+            case 233:
+                content = "CIFRA"
+            case 745:
+                content = "CITIBANK"
+            case 241:
+                content = "CLÁSSICO"
+            case 756:
+                content = "BANCOOB"
+            case 222:
+                content = "CREDIT AGRICOLE"
+            case 505:
+                content = "CREDIT SUISSE"
+            case 69:
+                content = "CREFISA"
+            case 3:
+                content = "BANCO AMAZONIA"
+            case 83:
+                content = "BANCO DA CHINA"
+            case 707:
+                content = "DAYCOVAL"
+            case 51:
+                content = "ESPIRITO STO"
+            case 300:
+                content = "BANCO ARGENTINA"
+            case 495:
+                content = "BANCO BUENOS AI"
+            case 494:
+                content = "BANCO URUGUAY"
+            case 335:
+                content = "DIGIO"
+            case 1:
+                content = "BANCO DO BRASIL"
+            case 47:
+                content = "BANCO SERGIPE"
+            case 37:
+                content = "BANCO PARA"
+            case 41:
+                content = "BANCO RS"
+            case 4:
+                content = "BANCO NE"
+            case 196:
+                content = "FAIR"
+            case 265:
+                content = "FATOR"
+            case 224:
+                content = "FIBRA"
+            case 626:
+                content = "FICSA"
+            case 94:
+                content = "FINAXIS"
+            case 612:
+                content = "GUANABARA"
+            case 12:
+                content = "INBURSA"
+            case 604:
+                content = "BANCO INDUSTRIA"
+            case 653:
+                content = "INDUSVAL"
+            case 77:
+                content = "INTER"
+            case 249:
+                content = "INVESTCRED"
+            case 184:
+                content = "ITAU BBA"
+            case 29:
+                content = "ITAU CONSIGNADO"
+            case 479:
+                content = "ITAUBANK"
+            case 341:
+                content = "ITAU"
+            case 376:
+                content = "JP MORGAN"
+            case 422:
+                content = "BANCOFRA"
+            case 217:
+                content = "JOHN DEERE"
+            case 76:
+                content = "KDB"
+            case 757:
+                content = "KEB HANA"
+            case 600:
+                content = "LUSO BRASILEIRO"
+            case 243:
+                content = "MAXIMA"
+            case 720:
+                content = "MAXINVEST"
+            case 389:
+                content = "MERCANTIL"
+            case 370:
+                content = "MIZUHO BRASIL"
+            case 746:
+                content = "MODAL"
+            case 66:
+                content = "MORGAN STANLEY"
+            case 456:
+                content = "MUFG BRASIL"
+            case 7:
+                content = "BNDES"
+            case _:
+                content = ""
+        return content.ljust(length + 1)[:length]

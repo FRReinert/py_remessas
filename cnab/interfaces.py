@@ -9,6 +9,16 @@ class ICnabLine(ABC):
         pass
 
 
+class ICnabTrail(ABC):
+    """Cnab Trail Interface"""
+
+    contract_amount: int
+
+    @abstractmethod
+    def make_line(self) -> str:  # pragma: no cover
+        pass
+
+
 class ICnabName(ABC):
     """Cnab Name provider Interface"""
 
@@ -22,7 +32,7 @@ class ICnabFactory(ABC):
     @abstractstaticmethod
     def export(
         header_factory: ICnabLine,
-        trail_factory: ICnabLine,
+        trail_factory: ICnabTrail,
         contracts: list[ICnabLine],
     ):  # pragma: no cover
         pass
